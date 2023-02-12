@@ -1,0 +1,3 @@
+build_docs_venv
+.idea
+**/__pycache__
