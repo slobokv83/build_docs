@@ -11,10 +11,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2.3.4
+        uses: actions/checkout@v2
 
       - name: Set up Python
-        uses: actions/setup-python@v2.2.1
+        uses: actions/setup-python@v2
         with:
           python-version: 3.9
 
@@ -23,26 +23,23 @@ jobs:
           python -m pip install -U sphinx
           python -m pip install sphinx-rtd-theme
 
-      - name: make the sphinx docs
+      - name: Set Git config
         run: |
-          make -C docs clean
-          make -C docs html
-
-      - name: Init new repo in dest folder and commit generated files
-        run: |
-          cd docs/build/html/
-          git init
-          touch .nojekyll
-          git add -A
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git config --global --add safe.directory /github/workspace/docs/build/html
-          git commit -m "deploy docs"
 
-      - name: Force push to destination branch
-        uses: ad-m/github-push-action@v0.5.0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: gh-pages
-          force: true
-          directory: ./docs/build/html
+      - name: Merge master to gh-pages
+        run: |
+          git fetch --unshallow
+          git checkout gh-pages
+          git pull
+          git merge -X theirs --no-ff origin/master -m "Auto-merge master to gh-pages"
+      - name: Build GitHub pages
+        run: |
+          cd docs
+          sphinx-build -M html source build
+          cp -a ./build/html/. .
+          rm -rf ./build/
+          git add ..
+          git commit -m "Documentation for version"
+          git push origin gh-pages
