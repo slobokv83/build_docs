@@ -12,6 +12,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        env:
+          GITHUB_ACTOR: github-actions[bot]
 
       - name: Set up Python
         uses: actions/setup-python@v2
@@ -25,8 +27,8 @@ jobs:
 
       - name: Set Git config
         run: |
-          git config --local user.email "slobokv83@yahoo.com"
-          git config --local user.name "slobodantodosijevic"
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
 
       - name: Merge master to gh-pages
         run: |
